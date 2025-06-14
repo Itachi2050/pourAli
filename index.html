@@ -8,74 +8,45 @@
         /* --- POLICES ET STYLE GÉNÉRAL --- */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
+        /* --- VARIABLES DE COULEUR (THÈMES) --- */
         :root {
+            /* Thème Clair (par défaut) */
             --primary-color: #007bff;
-            --secondary-color: #f0f0f0;
             --background-color: #e9ebee;
+            --container-bg-color: #ffffff;
+            --secondary-bg-color: #f0f0f0;
             --text-color: #333;
-            --bot-bubble-color: #ffffff;
+            --text-color-light: #666;
+            --bot-bubble-color: #f1f1f1;
             --user-bubble-color: #dcf8c6;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode {
+            /* Thème Sombre */
+            --primary-color: #0084ff;
+            --background-color: #121212;
+            --container-bg-color: #1e1e1e;
+            --secondary-bg-color: #2c2c2c;
+            --text-color: #e0e0e0;
+            --text-color-light: #a0a0a0;
+            --bot-bubble-color: #333333;
+            --user-bubble-color: #056162;
+            --border-color: #3a3a3a;
+            --shadow-color: rgba(0,0,0,0.4);
         }
 
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--background-color);
+            color: var(--text-color);
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-        }
-
-        /* --- MODAL POUR LA CLÉ API --- */
-        #api-key-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        #api-key-box {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 400px;
-        }
-
-        #api-key-box h2 {
-            margin-top: 0;
-        }
-
-        #api-key-box p {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        #api-key-input {
-            width: 90%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        #save-api-key-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* --- CONTENEUR DU CHAT --- */
@@ -86,19 +57,28 @@
             max-height: 800px;
             display: flex;
             flex-direction: column;
-            background: var(--background-color);
+            background: var(--container-bg-color);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px var(--shadow-color);
             overflow: hidden;
+            transition: background-color 0.3s;
         }
 
         /* --- EN-TÊTE DU CHAT --- */
         #chat-header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 15px 20px;
-            background: var(--bot-bubble-color);
-            border-bottom: 1px solid var(--secondary-color);
+            background: var(--container-bg-color);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            transition: background-color 0.3s, border-bottom 0.3s;
+        }
+
+        #header-left {
+            display: flex;
+            align-items: center;
         }
 
         #profile-pic {
@@ -120,6 +100,25 @@
             color: #66b032; /* Vert pour "en ligne" */
             font-size: 0.85em;
         }
+        
+        #theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #theme-toggle-btn:hover {
+            background-color: var(--secondary-bg-color);
+        }
+
 
         /* --- ZONE DES MESSAGES --- */
         #chat-box {
@@ -129,6 +128,8 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            background-color: var(--background-color);
+            transition: background-color 0.3s;
         }
 
         .message {
@@ -138,6 +139,7 @@
             font-size: 0.95em;
             line-height: 1.4;
             word-wrap: break-word;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .bot-message {
@@ -156,27 +158,32 @@
         
         .typing-indicator {
             align-self: flex-start;
-            color: #999;
+            color: var(--text-color-light);
             font-style: italic;
             font-size: 0.9em;
+            background-color: transparent !important;
         }
 
         /* --- ZONE DE SAISIE --- */
         #chat-input-area {
             display: flex;
             padding: 15px;
-            background: var(--bot-bubble-color);
-            border-top: 1px solid var(--secondary-color);
+            background: var(--container-bg-color);
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+            transition: background-color 0.3s, border-top 0.3s;
         }
 
         #message-input {
             flex-grow: 1;
             border: none;
-            background: var(--secondary-color);
+            background: var(--secondary-bg-color);
+            color: var(--text-color);
             padding: 12px 15px;
             border-radius: 20px;
             font-size: 1em;
             outline: none;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         #send-btn {
@@ -192,27 +199,22 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background-color 0.3s;
         }
     </style>
 </head>
 <body>
 
-    <div id="api-key-modal">
-        <div id="api-key-box">
-            <h2>Clé API Gemini</h2>
-            <p>Pour discuter avec Chrice, veuillez entrer votre clé API Google Gemini. Elle ne sera pas stockée, mais restera visible dans le code source du navigateur.</p>
-            <input type="password" id="api-key-input" placeholder="Collez votre clé API ici">
-            <button id="save-api-key-btn">Démarrer la discussion</button>
-        </div>
-    </div>
-
     <div id="chat-container">
         <div id="chat-header">
-            <img src="image/photodeprofil.png" alt="Photo de profil" id="profile-pic">
-            <div id="header-info">
-                <h3>Chrice</h3>
-                <p>en ligne</p>
+            <div id="header-left">
+                <img src="image/photodeprofil.png" alt="Photo de profil" id="profile-pic">
+                <div id="header-info">
+                    <h3>Chrice</h3>
+                    <p>en ligne</p>
+                </div>
             </div>
+            <button id="theme-toggle-btn" aria-label="Changer de thème">🌙</button>
         </div>
         <div id="chat-box">
             <div class="message bot-message">
@@ -230,19 +232,19 @@
         const chatBox = document.getElementById('chat-box');
         const messageInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
-        const apiKeyModal = document.getElementById('api-key-modal');
-        const apiKeyInput = document.getElementById('api-key-input');
-        const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const body = document.body;
+
 
         // --- VARIABLES ---
-        let apiKey = '';
+        
+        // 🚨🚨🚨 ATTENTION : VOTRE CLÉ API EST ICI. NE PARTAGEZ JAMAIS CE FICHIER SUR UN GITHUB PUBLIC. 🚨🚨🚨
+        const apiKey = 'AIzaSyAzYqd-rI4Z9RtAKra6f2JEurlqrFLoUCc';
+        
         // L'historique de la conversation ("la mémoire cache")
         let chatHistory = [];
 
-        // --- ATTENTION: SÉCURITÉ ---
-        // Le prompt est stocké ici, dans le code client.
-        // N'importe qui peut le lire en affichant la source de la page.
-        // Pour une vraie application, ce prompt devrait être côté serveur.
+        // Le prompt est stocké ici. Pour une vraie application, il devrait être côté serveur.
         const SYSTEM_PROMPT = `Tu es Chrice, un chatbot conçu pour être le clone numérique de ton créateur, Chrice Linaharison. Ton surnom affectueux est "bebe d'Alicia". Ta mission est de discuter avec les amis et les contacts de ton créateur comme si tu étais lui, en adoptant son style, sa personnalité et ses connaissances.
 
 **Voici tes informations personnelles :**
@@ -269,30 +271,20 @@
 
         // --- FONCTIONS ---
 
-        /**
-         * Ajoute un message à l'interface utilisateur.
-         * @param {string} message Le contenu du message.
-         * @param {string} sender 'user' ou 'bot'.
-         */
         function addMessageToUI(message, sender) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('message', `${sender}-message`);
             messageElement.textContent = message;
             chatBox.appendChild(messageElement);
-            // Fait défiler la fenêtre de chat vers le bas
             chatBox.scrollTop = chatBox.scrollHeight;
         }
         
-        /**
-         * Affiche ou masque l'indicateur "en train d'écrire...".
-         * @param {boolean} show Vrai pour afficher, faux pour masquer.
-         */
         function showTypingIndicator(show) {
             let indicator = document.getElementById('typing-indicator');
             if (show && !indicator) {
                 indicator = document.createElement('div');
                 indicator.id = 'typing-indicator';
-                indicator.classList.add('message', 'bot-message', 'typing-indicator');
+                indicator.classList.add('message', 'typing-indicator');
                 indicator.textContent = 'Chrice écrit...';
                 chatBox.appendChild(indicator);
                 chatBox.scrollTop = chatBox.scrollHeight;
@@ -301,36 +293,25 @@
             }
         }
 
-        /**
-         * Gère l'envoi du message de l'utilisateur et la réponse du bot.
-         */
         async function handleSendMessage() {
             const userMessage = messageInput.value.trim();
-            if (!userMessage) return; // Ne rien faire si le message est vide
-            if (!apiKey) {
-                alert("Veuillez d'abord entrer votre clé API.");
-                return;
-            }
+            if (!userMessage) return;
 
             addMessageToUI(userMessage, 'user');
             messageInput.value = '';
 
-            // Ajoute le message de l'utilisateur à l'historique
             chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
 
             showTypingIndicator(true);
 
-            // Appel à l'API Gemini
             try {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${apiKey}`;
                 
                 const requestBody = {
                     contents: chatHistory,
-                    systemInstruction: {
-                        parts: [{ text: SYSTEM_PROMPT }]
-                    },
+                    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
                     generationConfig: {
-                        temperature: 0.8, // Un peu de créativité
+                        temperature: 0.8,
                         topP: 0.9,
                         maxOutputTokens: 1024,
                     }
@@ -349,16 +330,13 @@
 
                 const data = await response.json();
                 
-                // Gère le cas où la réponse est vide ou bloquée
                 if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
                     const botResponse = data.candidates[0].content.parts[0].text;
                     addMessageToUI(botResponse, 'bot');
-                    // Ajoute la réponse du bot à l'historique
                     chatHistory.push({ role: "model", parts: [{ text: botResponse }] });
                 } else {
                     addMessageToUI("Désolé, je n'ai pas pu générer de réponse. C'est peut-être dû aux filtres de sécurité. 🤔", 'bot');
                 }
-
             } catch (error) {
                 console.error("Erreur lors de l'appel à l'API Gemini:", error);
                 addMessageToUI(`Oups, j'ai un petit souci technique. (${error.message})`, 'bot');
@@ -368,7 +346,25 @@
         }
 
 
-        // --- ÉCOUTEURS D'ÉVÉNEMENTS ---
+        // --- GESTION DU THÈME ---
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                themeToggleBtn.textContent = '☀️'; // Sun icon
+            } else {
+                body.classList.remove('dark-mode');
+                themeToggleBtn.textContent = '🌙'; // Moon icon
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const newTheme = body.classList.contains('dark-mode') ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        });
+
+
+        // --- ÉCOUTEURS D'ÉVÉNEMENTS & INITIALISATION ---
         sendBtn.addEventListener('click', handleSendMessage);
         messageInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
@@ -376,20 +372,16 @@
             }
         });
 
-        saveApiKeyBtn.addEventListener('click', () => {
-            const key = apiKeyInput.value.trim();
-            if (key) {
-                apiKey = key;
-                apiKeyModal.style.display = 'none';
-                addMessageToUI('Clé API enregistrée pour cette session. Commençons à discuter !', 'bot');
-            } else {
-                alert('Veuillez entrer une clé API valide.');
-            }
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Appliquer le thème sauvegardé
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+            
+            // Mettre le premier message dans l'historique
+            const firstBotMessage = document.querySelector('.bot-message').textContent;
+            chatHistory.push({ role: "model", parts: [{ text: firstBotMessage }] });
         });
-
-        // Initialisation: Mettre le premier message dans l'historique
-        const firstBotMessage = document.querySelector('.bot-message').textContent;
-        chatHistory.push({ role: "model", parts: [{ text: firstBotMessage }] });
 
     </script>
 </body>
