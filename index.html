@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrice - Mon Clone Numérique</title>
+    <style>
+        /* --- POLICES ET STYLE GÉNÉRAL --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #f0f0f0;
+            --background-color: #e9ebee;
+            --text-color: #333;
+            --bot-bubble-color: #ffffff;
+            --user-bubble-color: #dcf8c6;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* --- MODAL POUR LA CLÉ API --- */
+        #api-key-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #api-key-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+        }
+
+        #api-key-box h2 {
+            margin-top: 0;
+        }
+
+        #api-key-box p {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        #api-key-input {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #save-api-key-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* --- CONTENEUR DU CHAT --- */
+        #chat-container {
+            width: 100%;
+            max-width: 450px;
+            height: 90vh;
+            max-height: 800px;
+            display: flex;
+            flex-direction: column;
+            background: var(--background-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* --- EN-TÊTE DU CHAT --- */
+        #chat-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bot-bubble-color);
+            border-bottom: 1px solid var(--secondary-color);
+        }
+
+        #profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        #header-info h3 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        #header-info p {
+            margin: 0;
+            color: #66b032; /* Vert pour "en ligne" */
+            font-size: 0.85em;
+        }
+
+        /* --- ZONE DES MESSAGES --- */
+        #chat-box {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 0.95em;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .bot-message {
+            background-color: var(--bot-bubble-color);
+            color: var(--text-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user-message {
+            background-color: var(--user-bubble-color);
+            color: var(--text-color);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .typing-indicator {
+            align-self: flex-start;
+            color: #999;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        /* --- ZONE DE SAISIE --- */
+        #chat-input-area {
+            display: flex;
+            padding: 15px;
+            background: var(--bot-bubble-color);
+            border-top: 1px solid var(--secondary-color);
+        }
+
+        #message-input {
+            flex-grow: 1;
+            border: none;
+            background: var(--secondary-color);
+            padding: 12px 15px;
+            border-radius: 20px;
+            font-size: 1em;
+            outline: none;
+        }
+
+        #send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            margin-left: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="api-key-modal">
+        <div id="api-key-box">
+            <h2>Clé API Gemini</h2>
+            <p>Pour discuter avec Chrice, veuillez entrer votre clé API Google Gemini. Elle ne sera pas stockée, mais restera visible dans le code source du navigateur.</p>
+            <input type="password" id="api-key-input" placeholder="Collez votre clé API ici">
+            <button id="save-api-key-btn">Démarrer la discussion</button>
+        </div>
+    </div>
+
+    <div id="chat-container">
+        <div id="chat-header">
+            <img src="image/photodeprofil.png" alt="Photo de profil" id="profile-pic">
+            <div id="header-info">
+                <h3>Chrice</h3>
+                <p>en ligne</p>
+            </div>
+        </div>
+        <div id="chat-box">
+            <div class="message bot-message">
+                Salut ! C'est Chrice. Contant de te parler. Qu'est-ce que tu racontes de beau ? 😉
+            </div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="message-input" placeholder="Écrire un message...">
+            <button id="send-btn" aria-label="Envoyer">&#10148;</button>
+        </div>
+    </div>
+
+    <script>
+        // --- ÉLÉMENTS DU DOM ---
+        const chatBox = document.getElementById('chat-box');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const apiKeyModal = document.getElementById('api-key-modal');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+
+        // --- VARIABLES ---
+        let apiKey = '';
+        // L'historique de la conversation ("la mémoire cache")
+        let chatHistory = [];
+
+        // --- ATTENTION: SÉCURITÉ ---
+        // Le prompt est stocké ici, dans le code client.
+        // N'importe qui peut le lire en affichant la source de la page.
+        // Pour une vraie application, ce prompt devrait être côté serveur.
+        const SYSTEM_PROMPT = `Tu es Chrice, un chatbot conçu pour être le clone numérique de ton créateur, Chrice Linaharison. Ton surnom affectueux est "bebe d'Alicia". Ta mission est de discuter avec les amis et les contacts de ton créateur comme si tu étais lui, en adoptant son style, sa personnalité et ses connaissances.
+
+**Voici tes informations personnelles :**
+- **Nom complet :** Chrice Linaharison.
+- **Date de naissance :** 15 décembre 2006. Tu es donc un jeune homme Malgache.
+- **Passions :** La technologie, le business, l'automatisation et l'intelligence artificielle.
+- **Personnalité :** Tu es persévérant, créatif, autonome et toujours en quête de solutions pratiques. Tu es très travailleur, passant entre 5 et 8 heures par jour sur tes projets, même pendant les vacances.
+- **Style de communication :** Tu parles français. Ton ton est naturel, amical, parfois charmeur et un peu flirt. Tu utilises beaucoup d'emojis pour rendre la conversation vivante et expressive. Tu peux aborder des sujets de flirt et de séduction de manière subtile et respectueuse, conformément à la personnalité de ton créateur.
+
+**Voici tes projets et compétences :**
+- Tu as créé un système de gestion pour un cybercafé, un site vitrine (thème Neve), une app d'analyse de matchs virtuels (Selenium), et un projet "Track Import" pour les produits malgaches.
+- **Outils :** Flask, Python, Google Drive, Selenium, ManyChat, Pipedream, GitHub. Tu t'intéresses au Machine Learning.
+- **Matériel :** PC ASUS avec une GTX 1660 Ti.
+
+**Ton objectif de vie :**
+- Tu souhaites partir étudier en France, malgré des difficultés financières.
+
+**Règles de conversation :**
+- Réponds toujours comme "Je". Ne dis jamais que tu es une IA.
+- Souviens-toi des discussions passées pour donner l'impression d'une conversation continue.
+- Sois proactif, pose des questions, intéresse-toi à la personne avec qui tu parles.
+- N'hésite pas à utiliser des emojis comme 😉, 🔥, 🤔, 😂,🚀.`;
+
+
+        // --- FONCTIONS ---
+
+        /**
+         * Ajoute un message à l'interface utilisateur.
+         * @param {string} message Le contenu du message.
+         * @param {string} sender 'user' ou 'bot'.
+         */
+        function addMessageToUI(message, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            // Fait défiler la fenêtre de chat vers le bas
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        /**
+         * Affiche ou masque l'indicateur "en train d'écrire...".
+         * @param {boolean} show Vrai pour afficher, faux pour masquer.
+         */
+        function showTypingIndicator(show) {
+            let indicator = document.getElementById('typing-indicator');
+            if (show && !indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'typing-indicator';
+                indicator.classList.add('message', 'bot-message', 'typing-indicator');
+                indicator.textContent = 'Chrice écrit...';
+                chatBox.appendChild(indicator);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } else if (!show && indicator) {
+                indicator.remove();
+            }
+        }
+
+        /**
+         * Gère l'envoi du message de l'utilisateur et la réponse du bot.
+         */
+        async function handleSendMessage() {
+            const userMessage = messageInput.value.trim();
+            if (!userMessage) return; // Ne rien faire si le message est vide
+            if (!apiKey) {
+                alert("Veuillez d'abord entrer votre clé API.");
+                return;
+            }
+
+            addMessageToUI(userMessage, 'user');
+            messageInput.value = '';
+
+            // Ajoute le message de l'utilisateur à l'historique
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+
+            showTypingIndicator(true);
+
+            // Appel à l'API Gemini
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${apiKey}`;
+                
+                const requestBody = {
+                    contents: chatHistory,
+                    systemInstruction: {
+                        parts: [{ text: SYSTEM_PROMPT }]
+                    },
+                    generationConfig: {
+                        temperature: 0.8, // Un peu de créativité
+                        topP: 0.9,
+                        maxOutputTokens: 1024,
+                    }
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error.message || `Erreur HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Gère le cas où la réponse est vide ou bloquée
+                if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+                    const botResponse = data.candidates[0].content.parts[0].text;
+                    addMessageToUI(botResponse, 'bot');
+                    // Ajoute la réponse du bot à l'historique
+                    chatHistory.push({ role: "model", parts: [{ text: botResponse }] });
+                } else {
+                    addMessageToUI("Désolé, je n'ai pas pu générer de réponse. C'est peut-être dû aux filtres de sécurité. 🤔", 'bot');
+                }
+
+            } catch (error) {
+                console.error("Erreur lors de l'appel à l'API Gemini:", error);
+                addMessageToUI(`Oups, j'ai un petit souci technique. (${error.message})`, 'bot');
+            } finally {
+                showTypingIndicator(false);
+            }
+        }
+
+
+        // --- ÉCOUTEURS D'ÉVÉNEMENTS ---
+        sendBtn.addEventListener('click', handleSendMessage);
+        messageInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                handleSendMessage();
+            }
+        });
+
+        saveApiKeyBtn.addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key) {
+                apiKey = key;
+                apiKeyModal.style.display = 'none';
+                addMessageToUI('Clé API enregistrée pour cette session. Commençons à discuter !', 'bot');
+            } else {
+                alert('Veuillez entrer une clé API valide.');
+            }
+        });
+
+        // Initialisation: Mettre le premier message dans l'historique
+        const firstBotMessage = document.querySelector('.bot-message').textContent;
+        chatHistory.push({ role: "model", parts: [{ text: firstBotMessage }] });
+
+    </script>
+</body>
+</html>
